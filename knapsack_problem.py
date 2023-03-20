@@ -2,6 +2,7 @@ import random
 
 from genetic_algorithm import Problem, GA
 
+# TODO: delete this file in the end
 
 def _compute_total_weight(individual: list) -> int:
     return sum([item[1] * item[2] for item in individual])

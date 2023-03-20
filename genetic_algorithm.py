@@ -1,59 +1,36 @@
 import random
-from typing import Any
+from typing import List
 
 import numpy as np
 
-
-class Problem:
-    population_size: int
-    fitness: Any
-    population_generation: Any
-    mutation: Any
-
-    def __init__(self, size: int, f: Any, p: Any, m: Any):
-        self.population_size = size
-        self.fitness = f
-        self.population_generation = p
-        self.mutation = m
-
-    def initialize_population(self) -> list:
-        return self.population_generation(self.population_size)
-
-    def compute_fitness(self, population) -> list:
-        return self.fitness(population)
-
-    def mutate(self, population, mutation_probability):
-        return self.mutation(population, mutation_probability)
+from person import Person
+from simulation import Simulation
 
 
 class GA:
-    problem: Problem
-    crossover_probability: float
-    mutation_probability: float
-    population: list
-    mating_pool: list
-    fitness: list
+    simulation: Simulation
 
-    def __init__(self, problem: Problem, pc: float, pm: float) -> None:
+    def __init__(self, problem: Problem) -> None:
         self.problem = problem
-        self.crossover_probability = pc
-        self.mutation_probability = pm
 
-    def run(self, number_of_generations: int):
+    def run(self):
         self._initialize_population()
-        for i in range(number_of_generations):
+        for i in range(self.problem.n_generations):
             self._generate_new_population()
             self._show_information()
 
     def _initialize_population(self) -> None:
-        self.population = self.problem.initialize_population()
+        self.problem.illnesses._generate_initial_population(
+            population_size=self.problem.population_size,
+            n_initial_contaminations=self.problem.n_initial_contaminations
+        )
 
     def _generate_new_population(self) -> None:
-        self._selection()
+        mating_pool = self._selection()
         self._crossover()
         self.population = self.problem.mutate(self.population, self.mutation_probability)
 
-    def _selection(self) -> None:
+    def _selection(self) -> List[Person]:
         self.fitness = self.problem.compute_fitness(self.population)
 
         elite_size = int(self.problem.population_size * 0.3)
