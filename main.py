@@ -22,7 +22,7 @@ class Flu(Illness):
 if __name__ == "__main__":
     simulation = Simulation(
         population_size=1000,
-        simulation_time=10000,
+        simulation_time=100,
         n_initial_cases=5,
         vaccine_policy=20,
         quarantine_duration_vaccinated=7,
@@ -40,4 +40,4 @@ if __name__ == "__main__":
         incubation_time=2
     )
 
-    simulation.simulate()
+    print(simulation.simulate())
