@@ -80,7 +80,7 @@ class Simulation:
 
         vaccines = np.zeros(population_size)
         vaccines[:vaccine_policy] = 1
-        rng.shuffle(illness)
+        rng.shuffle(vaccines)
         vaccines = list(map(bool, vaccines))
 
         self.population = [

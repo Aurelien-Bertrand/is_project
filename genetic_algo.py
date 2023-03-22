@@ -20,11 +20,11 @@ def simulate(individual):
         number_days_to_get_healthy_not_vaccinated=14,
         number_days_immunity=7,
         immunity_factor_per_time=2,  # Do not change!
-        contagion_distance=2,
+        contagion_distance=10,
         max_position=25,
         illness=Covid(),
-        vaccination_rate=0.1,
-        vaccine_efficiency=0.8,
+        vaccination_rate=0.05,
+        vaccine_efficiency=0.6,
         incubation_time=2
     )
 

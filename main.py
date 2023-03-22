@@ -4,8 +4,8 @@ from simulation import Simulation
 
 # TODO: define the relevant parameters here
 class Covid(Illness):
-    contagion_rate = 0.6
-    resistance_to_vaccine = 0.25
+    contagion_rate = 0.7
+    resistance_to_vaccine = 0.3
 
     def __init__(self):
         super().__init__(self.contagion_rate, self.resistance_to_vaccine)
