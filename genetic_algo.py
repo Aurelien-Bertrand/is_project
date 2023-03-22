@@ -1,5 +1,7 @@
 import random
 
+import numpy as np
+
 from main import Covid
 from simulation import Simulation
 from random import Random
@@ -7,7 +9,7 @@ from random import Random
 
 def simulate(individual):
     simulation = Simulation(
-        population_size=100,
+        population_size=200,
         simulation_time=100,
         n_initial_cases=5,
         vaccine_policy=individual[0],
@@ -16,7 +18,7 @@ def simulate(individual):
         number_days_until_quarantine=individual[3],
         number_days_to_get_healthy_vaccinated=10,
         number_days_to_get_healthy_not_vaccinated=14,
-        number_days_immunity=14,
+        number_days_immunity=7,
         immunity_factor_per_time=2,  # Do not change!
         contagion_distance=2,
         max_position=25,
@@ -31,20 +33,21 @@ def simulate(individual):
 
 def _generatePop():
     individuals = []
-    vaccine_policy = 0,
-    quarantine_duration_vaccinated = 0,
-    quarantine_duration_not_vaccinated = 0,
-    number_days_until_quarantine = 0,
     for _ in range(pop_size):
         individual = [Random().randint(0, j) for j in max_values]
-
         individuals.append(individual)
+
     return individuals
 
 
 def _compute_fitness(individual: list):
-    fitness = simulate(individual)[1] + sum(individual)
-    return 1 / fitness
+    fitness = sum(simulate(individual))
+    penalty = 0
+    for i in range(len(individual)):
+        if individual[i] > max_values[i]:
+            penalty += 1000
+
+    return 5 / (fitness + penalty)
 
 
 def _generate_fittest(population: list, fitness: list):
@@ -80,8 +83,8 @@ if __name__ == '__main__':
     pop_size = 50
     tournament_size = int(pop_size / 2)
 
-    crossover_prob = 0.6
-    mutation_prob = 0.2
+    crossover_prob = 0.9
+    mutation_prob = 0.01
 
     pop = _generatePop()
 
@@ -105,8 +108,10 @@ if __name__ == '__main__':
             pop.append(child1)
             pop.append(child2)
 
-        best_individual = _generate_fittest(pop, fitness_scores)
-        best_individual_score = fitness_scores[pop.index(best_individual)]
-        print(pop)
+        index_best_individual = np.argmax(fitness_scores)
+        best_individual = pop[index_best_individual]
+        best_individual_score = fitness_scores[index_best_individual]
         print(f"Gen {i}: best score ", best_individual_score, best_individual)
-        print(fitness_scores)
+
+        if best_individual_score == 1:
+            break
