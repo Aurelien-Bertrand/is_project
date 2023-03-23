@@ -143,8 +143,10 @@ class Simulation:
 
     def _compute_number_cases(self) -> int:
         return sum([1 if x.is_ill() else 0 for x in self.population])
+
     def _compute_new_cases(self,time) -> int:
         return sum([1 if (x.is_ill() and x.get_last_infection_time() == time) else 0 for x in self.population])
+
     # Returns the number of cases at the end of the simulation
     def simulate(self) -> (int, int):
         cumulated_cases = 0
