@@ -20,7 +20,7 @@ def simulate(individual):
         number_days_to_get_healthy_not_vaccinated=14,
         number_days_immunity=7,
         immunity_factor_per_time=2,  # Do not change!
-        contagion_distance=10,
+        contagion_distance=25,
         max_position=25,
         illness=Covid(),
         vaccination_rate=0.05,
@@ -34,7 +34,7 @@ def simulate(individual):
 def _generatePop():
     individuals = []
     for _ in range(pop_size):
-        individual = [Random().randint(0, j) for j in max_values]
+        individual = [Random().randint(min_values[j], max_values[j]) for j in range(len(max_values))]
         individuals.append(individual)
 
     return individuals
@@ -44,10 +44,10 @@ def _compute_fitness(individual: list):
     fitness = sum(simulate(individual))
     penalty = 0
     for i in range(len(individual)):
-        if individual[i] > max_values[i]:
+        if individual[i] > max_values[i] or individual[i] < min_values[i]:
             penalty += 1000
 
-    return 5 / (fitness + penalty)
+    return 1 / (fitness + penalty)
 
 
 def _generate_fittest(population: list, fitness: list):
@@ -73,12 +73,18 @@ def _generate_offspring(p1, p2):
     for i in range(len(p1)):
         for c in [c1, c2]:
             if Random().random() < mutation_prob:
-                c[i] = Random().randint(0, max_values[i])
+                if min_values[i] < c[i] < max_values[i]:
+                    c[i] += random.choice([1, -1])
+                elif c[i] == min_values[i]:
+                    c[i] += 1
+                elif c[i] == max_values[i]:
+                    c[i] -= 1
 
     return c1, c2
 
 
 if __name__ == '__main__':
+    min_values = [0,0,0,3]
     max_values = [20,14,14,7]
     pop_size = 50
     tournament_size = int(pop_size / 2)
