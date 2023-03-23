@@ -97,7 +97,7 @@ class Simulation:
         for i in infected:
             for j in infectible:
                 pos1, pos2 = self.population[i].get_position(), self.population[j].get_position()
-                if _compute_Manhattan_distance(pos1=pos1, pos2=pos2) < self.contagion_distance:
+                if _compute_Manhattan_distance(pos1=pos1, pos2=pos2) <= self.contagion_distance:
                     self._infect_each_other(time=time, person1=self.population[i], person2=self.population[j])
 
     def _infect_each_other(self, time: int, person1: Person, person2: Person) -> None:
@@ -143,11 +143,13 @@ class Simulation:
 
     def _compute_number_cases(self) -> int:
         return sum([1 if x.is_ill() else 0 for x in self.population])
-
+    def _compute_new_cases(self,time) -> int:
+        return sum([1 if (x.is_ill() and x.get_last_infection_time() == time) else 0 for x in self.population])
     # Returns the number of cases at the end of the simulation
     def simulate(self) -> (int, int):
         cumulated_cases = 0
-        for tick in range(1, self.simulation_time + 1):
+        new_cases = 0
+        for tick in range(0, self.simulation_time):
             # print(f"\n---------------Time {tick}-----------------")
             # print(f"--------Compute Infection---------")
             self._infections(time=tick)
@@ -158,8 +160,9 @@ class Simulation:
             # print(f"---------------Vaccinate-------------")
             self._vaccination()
             # print(f"--------------------------------")
-            cases = self._compute_number_cases()
-            cumulated_cases += cases
-            # print(f"Number of cases: {cases}")
+            # cases = self._compute_number_cases()
+            new_cases = self._compute_new_cases(tick)
+            cumulated_cases += new_cases
+            # print(f"Number of cases: {new_cases}")
 
-        return self._compute_number_cases(), cumulated_cases
+        return new_cases, cumulated_cases

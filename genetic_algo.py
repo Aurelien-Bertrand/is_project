@@ -22,11 +22,11 @@ class Flu(Illness):
         super().__init__(self.contagion_rate, self.resistance_to_vaccine)
 
 
-def simulate(individual):
+def simulate(individual,virus):
     simulation = Simulation(
         population_size=200,
         simulation_time=100,
-        n_initial_cases=5,
+        n_initial_cases=initial_cases,
         vaccine_policy=individual[0],
         quarantine_duration_vaccinated=individual[1],
         quarantine_duration_not_vaccinated=individual[2],
@@ -37,7 +37,7 @@ def simulate(individual):
         immunity_factor_per_time=2,  # Do not change!
         contagion_distance=4,
         max_position=25,
-        illness=Covid(),
+        illness=virus,
         vaccination_rate=0.1,
         vaccine_efficiency=0.6,
         incubation_time=2
@@ -56,13 +56,13 @@ def _generatePop():
 
 
 def _compute_fitness(individual: list):
-    fitness = sum(simulate(individual))
+    fitness = sum(simulate(individual,Covid()))+sum(simulate(individual,Flu()))
     penalty = 0
     for i in range(len(individual)):
         if individual[i] > max_values[i] or individual[i] < min_values[i]:
             penalty += 100
 
-    return 1 / (fitness + penalty)
+    return (2*initial_cases) / (fitness + penalty)
 
 
 def _generate_fittest(population: list, fitness: list):
@@ -100,12 +100,14 @@ def _generate_offspring(p1, p2):
 
 if __name__ == '__main__':
     min_values = [0, 0, 0, 3]
-    max_values = [20, 14, 14, 7]
+    max_values = [20, 5, 7, 7]
     pop_size = 50
     tournament_size = int(pop_size / 2)
 
     crossover_prob = 0.8
     mutation_prob = 0.1
+
+    initial_cases = 50
 
     pop = _generatePop()
 
