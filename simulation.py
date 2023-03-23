@@ -144,7 +144,7 @@ class Simulation:
     def _compute_number_cases(self) -> int:
         return sum([1 if x.is_ill() else 0 for x in self.population])
 
-    def _compute_new_cases(self,time) -> int:
+    def _compute_new_cases(self, time: int) -> int:
         return sum([1 if (x.is_ill() and x.get_last_infection_time() == time) else 0 for x in self.population])
 
     # Returns the number of cases at the end of the simulation
@@ -152,19 +152,15 @@ class Simulation:
         cumulated_cases = 0
         new_cases = 0
         for tick in range(0, self.simulation_time):
-            # print(f"\n---------------Time {tick}-----------------")
-            # print(f"--------Compute Infection---------")
             self._infections(time=tick)
-            # print(f"--------Update quarantines--------")
             self._update_quarantines(time=tick)
-            # print(f"---------------Move-------------")
             self._move()
-            # print(f"---------------Vaccinate-------------")
             self._vaccination()
-            # print(f"--------------------------------")
-            # cases = self._compute_number_cases()
+
             new_cases = self._compute_new_cases(tick)
             cumulated_cases += new_cases
-            # print(f"Number of cases: {new_cases}")
+
+            if self._compute_number_cases() == 0:
+                break
 
         return new_cases, cumulated_cases
